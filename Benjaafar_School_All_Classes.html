@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benjaafar School Group - Student Progress Tracker 2025/2026</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .header h1 {
+            color: #2d3748;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .header .school-info {
+            color: #4a5568;
+            font-size: 18px;
+            margin-top: 5px;
+            font-weight: 600;
+        }
+        
+        /* Tab Navigation */
+        .tab-navigation {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            border-bottom: 3px solid #e2e8f0;
+            padding-bottom: 10px;
+            background: white;
+            z-index: 100;
+            position: relative;
+            --show-hint: 0;
+        }
+        
+        @media (max-width: 768px) {
+            .tab-navigation::after {
+                content: '👉 اسحب لرؤية المزيد';
+                position: absolute;
+                right: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                background: linear-gradient(90deg, transparent, white 30%);
+                padding: 5px 10px 5px 30px;
+                font-size: 11px;
+                color: #667eea;
+                font-weight: bold;
+                pointer-events: none;
+                opacity: var(--show-hint);
+                transition: opacity 0.3s;
+            }
+        }
+        
+        .tab-btn {
+            padding: 12px 25px;
+            border: none;
+            background: #edf2f7;
+            color: #4a5568;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .tab-btn:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .class-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .class-header h2 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .class-header .student-count {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .attendance-panel {
+            background: #f7fafc;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 2px solid #667eea;
+        }
+        
+        .attendance-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .attendance-date {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2d3748;
+        }
+        
+        .attendance-status {
+            font-size: 14px;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        
+        .status-ready {
+            background: #48bb78;
+            color: white;
+        }
+        
+        .status-done {
+            background: #4299e1;
+            color: white;
+        }
+        
+        .previous-session {
+            background: #edf2f7;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 13px;
+            color: #4a5568;
+        }
+        
+        .previous-session strong {
+            color: #2d3748;
+        }
+        
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .btn-attendance {
+            background: #ed8936;
+            color: white;
+            font-size: 16px;
+            padding: 12px 25px;
+        }
+        
+        .btn-attendance:hover {
+            background: #dd6b20;
+        }
+        
+        .btn-attendance:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+        }
+        
+        .btn-save {
+            background: #48bb78;
+            color: white;
+        }
+        
+        .btn-save:hover {
+            background: #38a169;
+        }
+        
+        .btn-print {
+            background: #4299e1;
+            color: white;
+        }
+        
+        .btn-print:hover {
+            background: #3182ce;
+        }
+        
+        .btn-calculate {
+            background: #9f7aea;
+            color: white;
+        }
+        
+        .btn-calculate:hover {
+            background: #805ad5;
+        }
+        
+        .btn-edit {
+            background: #9f7aea;
+            color: white;
+        }
+        
+        .btn-edit:hover {
+            background: #805ad5;
+        }
+        
+        .btn-edit.active {
+            background: #e53e3e;
+        }
+        
+        .btn-edit.active:hover {
+            background: #c53030;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            font-size: 13px;
+        }
+        
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        th {
+            padding: 12px 8px;
+            text-align: center;
+            font-weight: bold;
+            border: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        td {
+            padding: 10px 8px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+        
+        tbody tr:nth-child(even) {
+            background: #f7fafc;
+        }
+        
+        tbody tr:hover {
+            background: #edf2f7;
+        }
+        
+        tbody tr.was-absent-previous {
+            background: #fff5f5;
+        }
+        
+        tbody tr.was-absent-previous:hover {
+            background: #fed7d7;
+        }
+        
+        .name-cell {
+            text-align: right;
+            font-weight: 600;
+            color: #2d3748;
+            min-height: 50px;
+            vertical-align: middle;
+        }
+        
+        .name-cell textarea {
+            width: 100%;
+            border: 2px dashed #cbd5e0;
+            background: #fff3cd;
+            font-weight: 600;
+            text-align: right;
+            padding: 12px 10px;
+            min-height: 50px;
+            height: auto;
+            line-height: 1.6;
+            font-size: 14px;
+            vertical-align: middle;
+            box-sizing: border-box;
+            overflow: hidden;
+            resize: vertical;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .name-cell.locked textarea {
+            border: none;
+            background: transparent;
+            pointer-events: none;
+            padding: 10px;
+            height: auto;
+            min-height: 40px;
+            font-size: 14px;
+            resize: none;
+        }
+        
+        input[type="number"],
+        input[type="text"] {
+            width: 60px;
+            padding: 5px;
+            border: 1px solid #cbd5e0;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 13px;
+        }
+        
+        input[type="number"]:focus,
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        input[type="checkbox"]:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+        
+        input.copybook-mark {
+            width: 70px;
+        }
+        
+        input.bonus {
+            width: 70px;
+        }
+        
+        .activity-score {
+            background: #e6fffa;
+            font-weight: bold;
+            color: #2d3748;
+        }
+        
+        .total-cell {
+            background: #edf2f7;
+            font-weight: bold;
+            color: #2d3748;
+            font-size: 14px;
+        }
+        
+        .final-grade {
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+            font-size: 15px;
+        }
+        
+        .rank-cell {
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .absence-cell {
+            background: #fff5f5;
+            font-weight: bold;
+            color: #e53e3e;
+            font-size: 16px;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #718096;
+            font-size: 12px;
+            padding-top: 20px;
+            border-top: 2px solid #e2e8f0;
+        }
+        
+        /* Back to top button */
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .back-to-top:active {
+            transform: scale(0.95);
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+                padding: 15px;
+            }
+            
+            .controls, .attendance-panel, .tab-navigation {
+                display: none;
+            }
+            
+            .tab-content {
+                display: block !important;
+            }
+            
+            table {
+                font-size: 10px;
+            }
+            
+            th, td {
+                padding: 6px 4px;
+            }
+            
+            textarea {
+                border: none;
+                background: transparent;
+                font-size: 11px;
+            }
+        }
+        
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 15px 10px;
+                border-radius: 10px;
+            }
+            
+            .header h1 {
+                font-size: 22px;
+            }
+            
+            .header .school-info {
+                font-size: 14px;
+            }
+            
+            /* Mobile-optimized tab navigation */
+            .tab-navigation {
+                position: sticky;
+                top: 0;
+                overflow-x: auto;
+                overflow-y: hidden;
+                flex-wrap: nowrap;
+                justify-content: flex-start;
+                padding-bottom: 15px;
+                margin-bottom: 15px;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: thin;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                margin-left: -10px;
+                margin-right: -10px;
+                padding-left: 10px;
+                padding-right: 10px;
+                padding-top: 10px;
+            }
+            
+            .tab-navigation::-webkit-scrollbar {
+                height: 6px;
+            }
+            
+            .tab-navigation::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 10px;
+            }
+            
+            .tab-navigation::-webkit-scrollbar-thumb {
+                background: #667eea;
+                border-radius: 10px;
+            }
+            
+            .tab-btn {
+                font-size: 15px;
+                padding: 14px 20px;
+                min-width: 100px;
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
+            
+            .class-header h2 {
+                font-size: 20px;
+            }
+            
+            /* Mobile-friendly attendance panel */
+            .attendance-panel {
+                padding: 15px;
+            }
+            
+            .attendance-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .attendance-date {
+                font-size: 15px;
+            }
+            
+            .attendance-status {
+                font-size: 13px;
+                padding: 6px 12px;
+            }
+            
+            .previous-session {
+                font-size: 12px;
+            }
+            
+            /* Larger touch-friendly buttons */
+            .btn {
+                padding: 14px 20px;
+                font-size: 15px;
+                min-height: 48px;
+            }
+            
+            .btn-attendance {
+                font-size: 17px;
+                padding: 16px 30px;
+                min-height: 52px;
+                width: 100%;
+            }
+            
+            .controls {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .controls .btn {
+                width: 100%;
+            }
+            
+            /* Mobile table optimization */
+            .table-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                margin-top: 15px;
+            }
+            
+            table {
+                font-size: 12px;
+                min-width: 800px;
+            }
+            
+            th {
+                padding: 10px 6px;
+                font-size: 11px;
+                position: sticky;
+                top: 0;
+                z-index: 20;
+            }
+            
+            td {
+                padding: 12px 6px;
+            }
+            
+            /* Larger touch targets for form inputs */
+            input[type="number"],
+            input[type="text"] {
+                width: 55px;
+                padding: 8px 4px;
+                font-size: 14px;
+                min-height: 40px;
+            }
+            
+            input[type="checkbox"] {
+                width: 28px;
+                height: 28px;
+                cursor: pointer;
+            }
+            
+            input.copybook-mark,
+            input.bonus {
+                width: 65px;
+            }
+            
+            /* Mobile-friendly textareas */
+            .name-cell textarea {
+                font-size: 13px;
+                padding: 10px 8px;
+                min-height: 45px;
+            }
+            
+            .name-cell.locked textarea {
+                font-size: 13px;
+                min-height: 40px;
+            }
+            
+            /* Better readability on mobile */
+            .rank-cell {
+                font-size: 14px;
+            }
+            
+            .activity-score,
+            .total-cell,
+            .final-grade {
+                font-size: 13px;
+            }
+            
+            .absence-cell {
+                font-size: 15px;
+            }
+            
+            .footer {
+                font-size: 11px;
+                padding-top: 15px;
+                margin-top: 20px;
+            }
+        }
+        
+        /* iPhone 14 Pro Max specific optimizations */
+        @media screen and (max-width: 430px) {
+            body {
+                padding: 5px;
+            }
+            
+            .container {
+                padding: 12px 8px;
+            }
+            
+            .header h1 {
+                font-size: 20px;
+            }
+            
+            .tab-btn {
+                font-size: 14px;
+                padding: 12px 18px;
+            }
+            
+            .class-header h2 {
+                font-size: 18px;
+            }
+            
+            .student-count {
+                font-size: 13px;
+            }
+            
+            .btn {
+                font-size: 14px;
+                padding: 12px 18px;
+            }
+            
+            table {
+                font-size: 11px;
+            }
+            
+            th {
+                padding: 8px 4px;
+                font-size: 10px;
+            }
+            
+            td {
+                padding: 10px 4px;
+            }
+        }
+        
+        /* Prevent iOS text size adjustment */
+        @supports (-webkit-touch-callout: none) {
+            body {
+                -webkit-text-size-adjust: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 سجل تتبع تقدم الطلاب</h1>
+            <div class="school-info">Benjaafar School Group | السنة الدراسية: 2025/2026</div>
+        </div>
+        
+        <!-- Tab Navigation -->
+        <div class="tab-navigation">
+            <button class="tab-btn active" onclick="switchTab('ac1g1')">AC1-G1</button>
+            <button class="tab-btn" onclick="switchTab('ac1g2')">AC1-G2</button>
+            <button class="tab-btn" onclick="switchTab('ac2g1')">AC2-G1</button>
+            <button class="tab-btn" onclick="switchTab('ac2g2')">AC2-G2</button>
+            <button class="tab-btn" onclick="switchTab('ac3g1')">AC3-G1</button>
+            <button class="tab-btn" onclick="switchTab('ac3g2')">AC3-G2</button>
+        </div>
+        
+        <!-- AC1-G1 Tab -->
+        <div id="ac1g1" class="tab-content active">
+            <div class="class-header">
+                <h2>AC1-G1</h2>
+                <div class="student-count">عدد الطلاب: 23</div>
+            </div>
+            
+            <div class="attendance-panel">
+                <div class="attendance-header">
+                    <div class="attendance-date" id="todayDate-ac1g1">📅 اليوم: جاري التحميل...</div>
+                    <div class="attendance-status status-ready" id="attendanceStatus-ac1g1">✓ جاهز لتسجيل الحضور</div>
+                </div>
+                <div id="previousSession-ac1g1" class="previous-session" style="display:none;">
+                    <strong>الحصة السابقة:</strong> <span id="previousAbsentList-ac1g1"></span>
+                </div>
+                <div style="margin-top: 15px; text-align: center;">
+                    <button class="btn btn-attendance" id="submitAttendanceBtn-ac1g1" onclick="submitAttendance('ac1g1')">✓ تأكيد حضور اليوم</button>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button class="btn btn-edit" id="editNamesBtn-ac1g1" onclick="toggleNameEdit('ac1g1')">✏️ تعديل الأسماء</button>
+                <button class="btn btn-calculate" onclick="calculateTotals('ac1g1')">📊 حساب المعدلات</button>
+                <button class="btn btn-save" onclick="saveData('ac1g1')">💾 حفظ البيانات</button>
+                <button class="btn btn-print" onclick="window.print()">🖨️ طباعة</button>
+            </div>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 40px;">الرتبة</th>
+                            <th style="width: 250px;">الإسم الكامل</th>
+                            <th style="width: 70px;">غائب اليوم؟</th>
+                            <th style="width: 70px;">اختبار 1<br>(20)<br><small>30%</small></th>
+                            <th style="width: 70px;">اختبار 2<br>(20)<br><small>30%</small></th>
+                            <th style="width: 80px;">دفتر الدروس<br>(20)<br><small>60% من الأنشطة</small></th>
+                            <th style="width: 70px;">نقاط إضافية<br>(+/-)<br><small>40% من الأنشطة</small></th>
+                            <th style="width: 70px;">مجموع الأنشطة<br>(20)</th>
+                            <th style="width: 60px;">مجموع الغياب</th>
+                            <th style="width: 70px;">المعدل النهائي<br>(20)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentBody-ac1g1"></tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- AC1-G2 Tab -->
+        <div id="ac1g2" class="tab-content">
+            <div class="class-header">
+                <h2>AC1-G2</h2>
+                <div class="student-count">عدد الطلاب: 20</div>
+            </div>
+            
+            <div class="attendance-panel">
+                <div class="attendance-header">
+                    <div class="attendance-date" id="todayDate-ac1g2">📅 اليوم: جاري التحميل...</div>
+                    <div class="attendance-status status-ready" id="attendanceStatus-ac1g2">✓ جاهز لتسجيل الحضور</div>
+                </div>
+                <div id="previousSession-ac1g2" class="previous-session" style="display:none;">
+                    <strong>الحصة السابقة:</strong> <span id="previousAbsentList-ac1g2"></span>
+                </div>
+                <div style="margin-top: 15px; text-align: center;">
+                    <button class="btn btn-attendance" id="submitAttendanceBtn-ac1g2" onclick="submitAttendance('ac1g2')">✓ تأكيد حضور اليوم</button>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button class="btn btn-edit" id="editNamesBtn-ac1g2" onclick="toggleNameEdit('ac1g2')">✏️ تعديل الأسماء</button>
+                <button class="btn btn-calculate" onclick="calculateTotals('ac1g2')">📊 حساب المعدلات</button>
+                <button class="btn btn-save" onclick="saveData('ac1g2')">💾 حفظ البيانات</button>
+                <button class="btn btn-print" onclick="window.print()">🖨️ طباعة</button>
+            </div>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 40px;">الرتبة</th>
+                            <th style="width: 250px;">الإسم الكامل</th>
+                            <th style="width: 70px;">غائب اليوم؟</th>
+                            <th style="width: 70px;">اختبار 1<br>(20)<br><small>30%</small></th>
+                            <th style="width: 70px;">اختبار 2<br>(20)<br><small>30%</small></th>
+                            <th style="width: 80px;">دفتر الدروس<br>(20)<br><small>60% من الأنشطة</small></th>
+                            <th style="width: 70px;">نقاط إضافية<br>(+/-)<br><small>40% من الأنشطة</small></th>
+                            <th style="width: 70px;">مجموع الأنشطة<br>(20)</th>
+                            <th style="width: 60px;">مجموع الغياب</th>
+                            <th style="width: 70px;">المعدل النهائي<br>(20)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentBody-ac1g2"></tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- AC2-G1 Tab -->
+        <div id="ac2g1" class="tab-content">
+            <div class="class-header">
+                <h2>AC2-G1</h2>
+                <div class="student-count">عدد الطلاب: 26</div>
+            </div>
+            
+            <div class="attendance-panel">
+                <div class="attendance-header">
+                    <div class="attendance-date" id="todayDate-ac2g1">📅 اليوم: جاري التحميل...</div>
+                    <div class="attendance-status status-ready" id="attendanceStatus-ac2g1">✓ جاهز لتسجيل الحضور</div>
+                </div>
+                <div id="previousSession-ac2g1" class="previous-session" style="display:none;">
+                    <strong>الحصة السابقة:</strong> <span id="previousAbsentList-ac2g1"></span>
+                </div>
+                <div style="margin-top: 15px; text-align: center;">
+                    <button class="btn btn-attendance" id="submitAttendanceBtn-ac2g1" onclick="submitAttendance('ac2g1')">✓ تأكيد حضور اليوم</button>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button class="btn btn-edit" id="editNamesBtn-ac2g1" onclick="toggleNameEdit('ac2g1')">✏️ تعديل الأسماء</button>
+                <button class="btn btn-calculate" onclick="calculateTotals('ac2g1')">📊 حساب المعدلات</button>
+                <button class="btn btn-save" onclick="saveData('ac2g1')">💾 حفظ البيانات</button>
+                <button class="btn btn-print" onclick="window.print()">🖨️ طباعة</button>
+            </div>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 40px;">الرتبة</th>
+                            <th style="width: 250px;">الإسم الكامل</th>
+                            <th style="width: 70px;">غائب اليوم؟</th>
+                            <th style="width: 70px;">اختبار 1<br>(20)<br><small>30%</small></th>
+                            <th style="width: 70px;">اختبار 2<br>(20)<br><small>30%</small></th>
+                            <th style="width: 80px;">دفتر الدروس<br>(20)<br><small>60% من الأنشطة</small></th>
+                            <th style="width: 70px;">نقاط إضافية<br>(+/-)<br><small>40% من الأنشطة</small></th>
+                            <th style="width: 70px;">مجموع الأنشطة<br>(20)</th>
+                            <th style="width: 60px;">مجموع الغياب</th>
+                            <th style="width: 70px;">المعدل النهائي<br>(20)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentBody-ac2g1"></tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- AC2-G2 Tab -->
+        <div id="ac2g2" class="tab-content">
+            <div class="class-header">
+                <h2>AC2-G2</h2>
+                <div class="student-count">عدد الطلاب: 29</div>
+            </div>
+            
+            <div class="attendance-panel">
+                <div class="attendance-header">
+                    <div class="attendance-date" id="todayDate-ac2g2">📅 اليوم: جاري التحميل...</div>
+                    <div class="attendance-status status-ready" id="attendanceStatus-ac2g2">✓ جاهز لتسجيل الحضور</div>
+                </div>
+                <div id="previousSession-ac2g2" class="previous-session" style="display:none;">
+                    <strong>الحصة السابقة:</strong> <span id="previousAbsentList-ac2g2"></span>
+                </div>
+                <div style="margin-top: 15px; text-align: center;">
+                    <button class="btn btn-attendance" id="submitAttendanceBtn-ac2g2" onclick="submitAttendance('ac2g2')">✓ تأكيد حضور اليوم</button>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button class="btn btn-edit" id="editNamesBtn-ac2g2" onclick="toggleNameEdit('ac2g2')">✏️ تعديل الأسماء</button>
+                <button class="btn btn-calculate" onclick="calculateTotals('ac2g2')">📊 حساب المعدلات</button>
+                <button class="btn btn-save" onclick="saveData('ac2g2')">💾 حفظ البيانات</button>
+                <button class="btn btn-print" onclick="window.print()">🖨️ طباعة</button>
+            </div>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 40px;">الرتبة</th>
+                            <th style="width: 250px;">الإسم الكامل</th>
+                            <th style="width: 70px;">غائب اليوم؟</th>
+                            <th style="width: 70px;">اختبار 1<br>(20)<br><small>30%</small></th>
+                            <th style="width: 70px;">اختبار 2<br>(20)<br><small>30%</small></th>
+                            <th style="width: 80px;">دفتر الدروس<br>(20)<br><small>60% من الأنشطة</small></th>
+                            <th style="width: 70px;">نقاط إضافية<br>(+/-)<br><small>40% من الأنشطة</small></th>
+                            <th style="width: 70px;">مجموع الأنشطة<br>(20)</th>
+                            <th style="width: 60px;">مجموع الغياب</th>
+                            <th style="width: 70px;">المعدل النهائي<br>(20)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentBody-ac2g2"></tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- AC3-G1 Tab -->
+        <div id="ac3g1" class="tab-content">
+            <div class="class-header">
+                <h2>AC3-G1</h2>
+                <div class="student-count">عدد الطلاب: 27</div>
+            </div>
+            
+            <div class="attendance-panel">
+                <div class="attendance-header">
+                    <div class="attendance-date" id="todayDate-ac3g1">📅 اليوم: جاري التحميل...</div>
+                    <div class="attendance-status status-ready" id="attendanceStatus-ac3g1">✓ جاهز لتسجيل الحضور</div>
+                </div>
+                <div id="previousSession-ac3g1" class="previous-session" style="display:none;">
+                    <strong>الحصة السابقة:</strong> <span id="previousAbsentList-ac3g1"></span>
+                </div>
+                <div style="margin-top: 15px; text-align: center;">
+                    <button class="btn btn-attendance" id="submitAttendanceBtn-ac3g1" onclick="submitAttendance('ac3g1')">✓ تأكيد حضور اليوم</button>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button class="btn btn-edit" id="editNamesBtn-ac3g1" onclick="toggleNameEdit('ac3g1')">✏️ تعديل الأسماء</button>
+                <button class="btn btn-calculate" onclick="calculateTotals('ac3g1')">📊 حساب المعدلات</button>
+                <button class="btn btn-save" onclick="saveData('ac3g1')">💾 حفظ البيانات</button>
+                <button class="btn btn-print" onclick="window.print()">🖨️ طباعة</button>
+            </div>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 40px;">الرتبة</th>
+                            <th style="width: 250px;">الإسم الكامل</th>
+                            <th style="width: 70px;">غائب اليوم؟</th>
+                            <th style="width: 70px;">اختبار 1<br>(20)<br><small>30%</small></th>
+                            <th style="width: 70px;">اختبار 2<br>(20)<br><small>30%</small></th>
+                            <th style="width: 80px;">دفتر الدروس<br>(20)<br><small>60% من الأنشطة</small></th>
+                            <th style="width: 70px;">نقاط إضافية<br>(+/-)<br><small>40% من الأنشطة</small></th>
+                            <th style="width: 70px;">مجموع الأنشطة<br>(20)</th>
+                            <th style="width: 60px;">مجموع الغياب</th>
+                            <th style="width: 70px;">المعدل النهائي<br>(20)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentBody-ac3g1"></tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- AC3-G2 Tab -->
+        <div id="ac3g2" class="tab-content">
+            <div class="class-header">
+                <h2>AC3-G2</h2>
+                <div class="student-count">عدد الطلاب: 26</div>
+            </div>
+            
+            <div class="attendance-panel">
+                <div class="attendance-header">
+                    <div class="attendance-date" id="todayDate-ac3g2">📅 اليوم: جاري التحميل...</div>
+                    <div class="attendance-status status-ready" id="attendanceStatus-ac3g2">✓ جاهز لتسجيل الحضور</div>
+                </div>
+                <div id="previousSession-ac3g2" class="previous-session" style="display:none;">
+                    <strong>الحصة السابقة:</strong> <span id="previousAbsentList-ac3g2"></span>
+                </div>
+                <div style="margin-top: 15px; text-align: center;">
+                    <button class="btn btn-attendance" id="submitAttendanceBtn-ac3g2" onclick="submitAttendance('ac3g2')">✓ تأكيد حضور اليوم</button>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button class="btn btn-edit" id="editNamesBtn-ac3g2" onclick="toggleNameEdit('ac3g2')">✏️ تعديل الأسماء</button>
+                <button class="btn btn-calculate" onclick="calculateTotals('ac3g2')">📊 حساب المعدلات</button>
+                <button class="btn btn-save" onclick="saveData('ac3g2')">💾 حفظ البيانات</button>
+                <button class="btn btn-print" onclick="window.print()">🖨️ طباعة</button>
+            </div>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 40px;">الرتبة</th>
+                            <th style="width: 250px;">الإسم الكامل</th>
+                            <th style="width: 70px;">غائب اليوم؟</th>
+                            <th style="width: 70px;">اختبار 1<br>(20)<br><small>30%</small></th>
+                            <th style="width: 70px;">اختبار 2<br>(20)<br><small>30%</small></th>
+                            <th style="width: 80px;">دفتر الدروس<br>(20)<br><small>60% من الأنشطة</small></th>
+                            <th style="width: 70px;">نقاط إضافية<br>(+/-)<br><small>40% من الأنشطة</small></th>
+                            <th style="width: 70px;">مجموع الأنشطة<br>(20)</th>
+                            <th style="width: 60px;">مجموع الغياب</th>
+                            <th style="width: 70px;">المعدل النهائي<br>(20)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentBody-ac3g2"></tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>🎓 Benjaafar School Group - Student Progress Tracker 2025/2026</p>
+            <p>Developed with ❤️ for better education management</p>
+        </div>
+    </div>
+    
+    <!-- Back to Top Button -->
+    <button class="back-to-top" id="backToTop" onclick="scrollToTop()">↑</button>
+
+    <script>
+        // Student data for all classes
+        const studentData = {
+            ac1g1: [
+                "Jabri Salma", "ZAABAR Nour El Houda", "EL AZZOUZI RIM", "Berrada Dina", "El Arrassi Taha",
+                "Chater Jannat", "Lekhal Ritaj", "El Idrissi Othmane", "AMJAD Mohamed", "El Fodali Rhassan",
+                "EL JANATI Ibrahim", "Essaki Yasmine", "ZEDGUI Walid", "EZZYOUNY Ibrahim", "EL AZIZI Imane",
+                "Achemlal Ahmed Reda", "AZFAR Khalil", "Bellahcen Raouane", "ABZOUH Rayan", "AL AMRANI Mohammed Yassine",
+                "BOUKHARI TAKI Hiba", "CHAJIA Salaheddine", "Tazi Mohammed"
+            ],
+            ac1g2: [
+                "NOUAOURI MOUAD", "LAHLOUA Omar", "HAFIDI JOUD", "smine Inas", "BOUTAQMANTI SAAD",
+                "Trirach Mohamed Reda", "Hajjioui Aymane", "MANSOURI ZAYD", "OUAJJANI ABDELOUAHAB",
+                "BENNOUNA DOUAE", "KADAOUI ABBASSI ILYASS", "elazrak mohammed yahya", "KERMACH Ziad",
+                "AZFAR ISMAIL", "BOUHMID Yahya", "KHALISS ARINE", "LEKBIRI ZAINAB",
+                "EL CHARIF EL KETTANI HAMZA", "SARGHINI ADAM", "Benbouida Malak"
+            ],
+            ac2g1: [
+                "EL HANBALI SARA", "HAMDINE NADA", "ALAOUI HICHAMI BOUTAYNA", "EL MASSAK NOUR",
+                "Berrada Mehdi", "EL MANSORI YASSIR", "OUAZER RANIA", "Khaldi Yassmine",
+                "NEJJAR Taha", "EL YOUSSFI KHADIJA", "El Hachimi Nader", "Rammach Maher",
+                "gouzi Amina", "EL-OUALI HAYTHAM", "MACHKOUR MAROUANE", "Zouhou Fatine",
+                "Labrigui Abdessamad", "GHAZI NIZAR", "HASSANI MOUAD", "IKEJIDEM MOHAMED IMRANE",
+                "El boumashouli Mohamed Iad", "El boumashouli AHMED ZIAD", "El Azizi Oussama",
+                "ES-SAÖUDY SOUKAYNA", "LOTFI KARAM", "JANATI IDRISSI OUMNIA"
+            ],
+            ac2g2: [
+                "TEMOUN Akram", "ER-RABBANY JAD", "FILALA TAHA", "SABRI RAYANE", "kobbi Omar",
+                "Bassim Sefiani Fatima Zahrae", "MEZZOUR MOUNA", "Battou Aya", "BRAHMI KENZA",
+                "Akasbi Ahmed Amine", "NECHAD YAHYA", "El Idrissi Yassmine", "Bouchareb Israe",
+                "ZEDGUI Adam", "Essafi Ghita", "HINGER  ABDERRAHMANE", "LAHJOU JIHAYTHAM",
+                "MOUMEN TAHA", "ZEDGUI BASMA", "CHAARI REDA", "El BouchraTaha", "SGHIOUR NADA",
+                "Saidi Lina", "EL KRYMY YOUSSEF", "FAKIR DOUAE", "HSAINE GHITA",
+                "AZAMI IDRISSI Zineb", "IBNELHAJ KARAM", "IBBOU HOUDA"
+            ],
+            ac3g1: [
+                "Saka Yousra", "Zouhri Nourhane", "CHABROUN ZIYAD", "EL IDRISSI MARWANE",
+                "Laaboudi taha", "El Boumashouli Mohamed adnane", "Bouayad Salma", "EZ.ZYOUANY Bilal",
+                "AFKIR REDA", "Harchali Bayane", "YAZAMI ZTAIT ISMAIL", "CHARQI MANAL",
+                "TAMMOUKH AYA", "ESSAKI Sara", "Hilali Ali", "Bassou Aymane", "Douahi Yasmine",
+                "ESSABBAR Adam", "MRITAKH ANAS", "EL JANATI MEHDI", "SEDJARI YOUSSEF",
+                "BENATHMANE BARAE", "AMRANI AYMANE", "ELAFFOURI AMINA", "EN-NASERY KENZA",
+                "EL-BOUABIDI MOHAMED ISLAM", "MACHKOURA MJAD"
+            ],
+            ac3g2: [
+                "DANDANI HALA", "BRICHA IDRISS", "NIYA ZINEB", "IBN YASSINE MOHAMMED",
+                "El Meskiri Kaoutar", "HANBALI MOHAMED YASSINE", "ES-SADY RIM", "HAFIDI DINA",
+                "RIFFI MTAOUNI YAHYA", "Ouedghiri Benchrif Youssef", "Loulidi Ghita", "BOUAYOUNE HIBA",
+                "el bananeTaha", "Smine Fatima zahra", "El Arrassi Rayan", "El Banïssi Adam",
+                "BENNIS SARA", "KHOLTI REDA", "LahnineJad", "Azizi Rania", "Lekhal Tasnim",
+                "CHAOUCH BARAE", "NIA Marwa", "SAFIOUI ROUMAYSSAE", "El boumashouli Ahmed rayane",
+                "AMJAD NAHIA"
+            ]
+        };
+        
+        // Current active class
+        let currentClass = 'ac1g1';
+        let nameEditModes = {};
+        
+        // Initialize on page load
+        window.addEventListener('load', function() {
+            // Initialize all classes
+            Object.keys(studentData).forEach(classId => {
+                initializeClassTable(classId);
+                initializeAttendance(classId);
+                loadData(classId);
+                loadAbsenceTotals(classId);
+            });
+            
+            // Mobile tab scroll hint
+            checkTabScroll();
+            window.addEventListener('resize', checkTabScroll);
+            
+            // Back to top button
+            window.addEventListener('scroll', toggleBackToTop);
+        });
+        
+        // Toggle back to top button visibility
+        function toggleBackToTop() {
+            const backToTop = document.getElementById('backToTop');
+            if (window.pageYOffset > 300) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+        }
+        
+        // Scroll to top function
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+        
+        // Check if tabs are scrollable on mobile
+        function checkTabScroll() {
+            const tabNav = document.querySelector('.tab-navigation');
+            if (window.innerWidth <= 768) {
+                if (tabNav.scrollWidth > tabNav.clientWidth) {
+                    tabNav.style.setProperty('--show-hint', '1');
+                } else {
+                    tabNav.style.setProperty('--show-hint', '0');
+                }
+                
+                // Hide hint after user scrolls
+                tabNav.addEventListener('scroll', function() {
+                    this.style.setProperty('--show-hint', '0');
+                }, { once: true });
+            }
+        }
+        
+        // Switch between tabs
+        function switchTab(classId) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active from all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(classId).classList.add('active');
+            
+            // Add active to clicked button
+            event.target.classList.add('active');
+            
+            // Scroll active tab into view on mobile
+            if (window.innerWidth <= 768) {
+                event.target.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'nearest', 
+                    inline: 'center' 
+                });
+            }
+            
+            currentClass = classId;
+        }
+        
+        // Initialize table for a class
+        function initializeClassTable(classId) {
+            const tbody = document.getElementById(`studentBody-${classId}`);
+            const students = studentData[classId];
+            
+            tbody.innerHTML = students.map((name, index) => `
+                <tr data-student="${index + 1}">
+                    <td class="rank-cell">${index + 1}</td>
+                    <td class="name-cell locked"><textarea class="student-name" readonly>${name}</textarea></td>
+                    <td><input type="checkbox" class="absent-check" data-student-id="${index + 1}"></td>
+                    <td><input type="number" min="0" max="20" step="0.25" class="test1" onchange="calculateRow(this, '${classId}')"></td>
+                    <td><input type="number" min="0" max="20" step="0.25" class="test2" onchange="calculateRow(this, '${classId}')"></td>
+                    <td><input type="number" min="0" max="20" step="0.25" class="copybook-mark" onchange="calculateRow(this, '${classId}')"></td>
+                    <td><input type="number" step="0.25" class="bonus" onchange="calculateRow(this, '${classId}')" placeholder="+/-"></td>
+                    <td class="activity-score activity-total">-</td>
+                    <td class="absence-cell total-absence">0</td>
+                    <td class="final-grade final-score">-</td>
+                </tr>
+            `).join('');
+        }
+        
+        // Initialize attendance system
+        function initializeAttendance(classId) {
+            const today = new Date();
+            const todayStr = today.toISOString().split('T')[0];
+            
+            // Display today's date in Arabic
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const arabicDate = today.toLocaleDateString('ar-MA', options);
+            document.getElementById(`todayDate-${classId}`).textContent = '📅 اليوم: ' + arabicDate;
+            
+            // Check if attendance already submitted today
+            const attendanceHistory = JSON.parse(localStorage.getItem(`Benjaafar_${classId}_Attendance_History`) || '{}');
+            
+            if (attendanceHistory[todayStr]) {
+                // Already submitted today
+                document.getElementById(`attendanceStatus-${classId}`).textContent = '✓ تم تسجيل الحضور اليوم';
+                document.getElementById(`attendanceStatus-${classId}`).className = 'attendance-status status-done';
+                document.getElementById(`submitAttendanceBtn-${classId}`).disabled = true;
+                document.getElementById(`submitAttendanceBtn-${classId}`).textContent = '✓ تم التسجيل';
+                
+                // Disable checkboxes
+                document.querySelectorAll(`#${classId} .absent-check`).forEach(cb => {
+                    cb.disabled = true;
+                    cb.checked = false;
+                });
+            }
+            
+            // Show previous session info
+            showPreviousSession(attendanceHistory, todayStr, classId);
+        }
+        
+        // Show previous session absences
+        function showPreviousSession(history, todayStr, classId) {
+            const dates = Object.keys(history).sort().reverse();
+            const previousDate = dates.find(d => d !== todayStr);
+            
+            if (previousDate && history[previousDate]) {
+                const absentIds = history[previousDate];
+                if (absentIds.length > 0) {
+                    const absentNames = absentIds.map(id => studentData[classId][id - 1]).join(', ');
+                    document.getElementById(`previousAbsentList-${classId}`).textContent = absentNames;
+                    document.getElementById(`previousSession-${classId}`).style.display = 'block';
+                    
+                    // Highlight rows of previously absent students
+                    document.querySelectorAll(`#${classId} tbody tr`).forEach(row => {
+                        const studentId = parseInt(row.dataset.student);
+                        if (absentIds.includes(studentId)) {
+                            row.classList.add('was-absent-previous');
+                        }
+                    });
+                } else {
+                    document.getElementById(`previousAbsentList-${classId}`).textContent = 'لا يوجد غياب';
+                    document.getElementById(`previousSession-${classId}`).style.display = 'block';
+                }
+            }
+        }
+        
+        // Submit today's attendance
+        function submitAttendance(classId) {
+            const today = new Date().toISOString().split('T')[0];
+            const checkboxes = document.querySelectorAll(`#${classId} .absent-check`);
+            const absentToday = [];
+            
+            checkboxes.forEach(cb => {
+                if (cb.checked) {
+                    absentToday.push(parseInt(cb.dataset.studentId));
+                }
+            });
+            
+            // Save to history
+            const attendanceHistory = JSON.parse(localStorage.getItem(`Benjaafar_${classId}_Attendance_History`) || '{}');
+            attendanceHistory[today] = absentToday;
+            localStorage.setItem(`Benjaafar_${classId}_Attendance_History`, JSON.stringify(attendanceHistory));
+            
+            // Update absence totals
+            updateAbsenceTotals(absentToday, classId);
+            
+            // Update UI
+            document.getElementById(`attendanceStatus-${classId}`).textContent = '✓ تم تسجيل الحضور اليوم';
+            document.getElementById(`attendanceStatus-${classId}`).className = 'attendance-status status-done';
+            document.getElementById(`submitAttendanceBtn-${classId}`).disabled = true;
+            document.getElementById(`submitAttendanceBtn-${classId}`).textContent = '✓ تم التسجيل';
+            
+            // Disable checkboxes
+            checkboxes.forEach(cb => {
+                cb.disabled = true;
+                cb.checked = false;
+            });
+            
+            // Haptic feedback on iOS
+            if (window.navigator && window.navigator.vibrate) {
+                window.navigator.vibrate(50);
+            }
+            
+            // Show success message
+            const totalStudents = studentData[classId].length;
+            const absentCount = absentToday.length;
+            alert(`✅ تم تسجيل الحضور بنجاح!\n\nالصف: ${classId.toUpperCase()}\nعدد الغائبين: ${absentCount}\nعدد الحاضرين: ${totalStudents - absentCount}`);
+        }
+        
+        // Update absence totals for students
+        function updateAbsenceTotals(absentIds, classId) {
+            const absenceTotals = JSON.parse(localStorage.getItem(`Benjaafar_${classId}_Absence_Totals`) || '{}');
+            
+            absentIds.forEach(id => {
+                absenceTotals[id] = (absenceTotals[id] || 0) + 1;
+            });
+            
+            localStorage.setItem(`Benjaafar_${classId}_Absence_Totals`, JSON.stringify(absenceTotals));
+            loadAbsenceTotals(classId);
+        }
+        
+        // Load and display absence totals
+        function loadAbsenceTotals(classId) {
+            const absenceTotals = JSON.parse(localStorage.getItem(`Benjaafar_${classId}_Absence_Totals`) || '{}');
+            
+            document.querySelectorAll(`#${classId} tbody tr`).forEach(row => {
+                const studentId = parseInt(row.dataset.student);
+                const total = absenceTotals[studentId] || 0;
+                row.querySelector('.total-absence').textContent = total;
+            });
+        }
+        
+        // Toggle name editing mode
+        function toggleNameEdit(classId) {
+            nameEditModes[classId] = !nameEditModes[classId];
+            const btn = document.getElementById(`editNamesBtn-${classId}`);
+            const nameCells = document.querySelectorAll(`#${classId} .name-cell`);
+            const nameInputs = document.querySelectorAll(`#${classId} .student-name`);
+            
+            if (nameEditModes[classId]) {
+                btn.textContent = '🔒 قفل الأسماء';
+                btn.classList.add('active');
+                nameCells.forEach(cell => cell.classList.remove('locked'));
+                nameInputs.forEach(input => input.removeAttribute('readonly'));
+            } else {
+                btn.textContent = '✏️ تعديل الأسماء';
+                btn.classList.remove('active');
+                nameCells.forEach(cell => cell.classList.add('locked'));
+                nameInputs.forEach(input => input.setAttribute('readonly', 'readonly'));
+            }
+        }
+        
+        // Calculate row grades
+        function calculateRow(element, classId) {
+            const row = element.closest('tr');
+            const test1 = parseFloat(row.querySelector('.test1').value) || 0;
+            const test2 = parseFloat(row.querySelector('.test2').value) || 0;
+            const copybookMark = parseFloat(row.querySelector('.copybook-mark').value) || 0;
+            const bonus = parseFloat(row.querySelector('.bonus').value) || 0;
+            
+            // Calculate activity score: copybook (60%) + bonus effect (40%)
+            const activityScore = (copybookMark * 0.6) + (bonus * 0.4);
+            
+            // Calculate final grade: test1 (30%) + test2 (30%) + activities (40%)
+            const finalGrade = (test1 * 0.3) + (test2 * 0.3) + (activityScore * 0.4);
+            
+            row.querySelector('.activity-total').textContent = activityScore.toFixed(2);
+            row.querySelector('.final-score').textContent = finalGrade.toFixed(2);
+        }
+        
+        // Calculate all grades
+        function calculateTotals(classId) {
+            const rows = document.querySelectorAll(`#${classId} tbody tr`);
+            let calculated = 0;
+            
+            rows.forEach(row => {
+                const test1Input = row.querySelector('.test1');
+                if (test1Input.value || row.querySelector('.test2').value || row.querySelector('.copybook-mark').value) {
+                    calculateRow(test1Input, classId);
+                    calculated++;
+                }
+            });
+            
+            // Haptic feedback
+            if (window.navigator && window.navigator.vibrate) {
+                window.navigator.vibrate(50);
+            }
+            
+            alert(`✅ تم حساب المعدلات بنجاح!\n\nالصف: ${classId.toUpperCase()}\nتم حساب ${calculated} طالب(ة)`);
+        }
+        
+        // Save all data
+        function saveData(classId) {
+            const rows = document.querySelectorAll(`#${classId} tbody tr`);
+            const data = [];
+            
+            rows.forEach((row, index) => {
+                const rowData = {
+                    student: row.dataset.student,
+                    name: row.querySelector('.student-name').value,
+                    test1: row.querySelector('.test1').value,
+                    test2: row.querySelector('.test2').value,
+                    copybookMark: row.querySelector('.copybook-mark').value,
+                    bonus: row.querySelector('.bonus').value
+                };
+                data.push(rowData);
+            });
+            
+            localStorage.setItem(`Benjaafar_${classId}_Progress_2025_2026`, JSON.stringify(data));
+            
+            // Haptic feedback
+            if (window.navigator && window.navigator.vibrate) {
+                window.navigator.vibrate([50, 30, 50]);
+            }
+            
+            const timestamp = new Date().toLocaleString('ar-MA');
+            alert(`💾 تم حفظ البيانات بنجاح!\n\nالصف: ${classId.toUpperCase()}\nوقت الحفظ: ${timestamp}`);
+        }
+        
+        // Load saved data
+        function loadData(classId) {
+            const savedData = localStorage.getItem(`Benjaafar_${classId}_Progress_2025_2026`);
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                const rows = document.querySelectorAll(`#${classId} tbody tr`);
+                
+                rows.forEach((row, index) => {
+                    if (data[index]) {
+                        row.querySelector('.student-name').value = data[index].name || '';
+                        row.querySelector('.test1').value = data[index].test1 || '';
+                        row.querySelector('.test2').value = data[index].test2 || '';
+                        row.querySelector('.copybook-mark').value = data[index].copybookMark || '';
+                        row.querySelector('.bonus').value = data[index].bonus || '';
+                        
+                        if (data[index].test1 || data[index].test2 || data[index].copybookMark) {
+                            calculateRow(row.querySelector('.test1'), classId);
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
